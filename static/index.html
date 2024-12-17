@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple Chat App</title>
+    <link rel="stylesheet" href="/static/prism.css">
+    <link rel="stylesheet" href="/static/style.css">
+    <script src="https://unpkg.com/htmx.org@1.9.6"></script>
+    <script src="https://unpkg.com/htmx.org/dist/ext/json-enc.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
+</head>
+
+<body>
+    <div class="chat-container">
+        <h1>Chat met AI</h1>
+        <div id="chat-messages">
+            
+        </div>
+        <div class="input-area">
+            <input type="text" id="message-input" placeholder="Type je bericht..." hx-post="/chat"
+                hx-headers='{"Content-Type": "application/json"}' hx-trigger="keyup[event.keyCode==13]"
+                hx-target="#chat-messages" hx-swap="beforeend" name="message" hx-ext="json-enc">
+        </div>
+    </div>
+    <script src="/static/prism.js"></script>
+    <script>
+        document.addEventListener('htmx:beforeRequest', function (evt) {
+            console.log("hello from beforeRequest")
+        })
+
+        document.addEventListener('htmx:afterRequest', function (event) {
+            console.log("Hello")
+            // console.log(event.detail.target.lastElementChild)
+            const aiMessage = event.detail.target.lastElementChild;
+            console.log(aiMessage)
+            if (aiMessage) {
+                aiMessage.innerHTML = marked.parse(aiMessage.innerHTML);
+            }
+            const codeBlocks = aiMessage.querySelectorAll("pre code");
+            console.log()
+            console.log(codeBlocks)
+            codeBlocks.forEach(function (element) {
+                Prism.highlightElement(element);
+            });
+        });
+
+
+    </script>
+
+</body>
+
+</html>
